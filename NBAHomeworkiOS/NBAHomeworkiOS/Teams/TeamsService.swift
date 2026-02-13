@@ -9,6 +9,8 @@ import SwiftUI
 import Combine
 
 final class TeamsService {
+    
+    // MARK: - Teams
     nonisolated struct ListTeamsRoot: Codable {
         let data: [TeamResponse]
     }
@@ -24,7 +26,7 @@ final class TeamsService {
             case abbreviation
         }
         
-        static func toTeam(_ response: TeamResponse) -> Team {
+        static func mapToTeam(_ response: TeamResponse) -> Team {
             Team(
                 id: response.id,
                 fullName: response.fullName,
@@ -33,7 +35,6 @@ final class TeamsService {
             )
         }
     }
-    
     
     @concurrent
     func listTeams() async throws -> [Team] {
@@ -45,15 +46,124 @@ final class TeamsService {
         
         let teamsData = try JSONDecoder().decode(ListTeamsRoot.self, from: data)
         
-        let teams: [Team] = teamsData.data.map(TeamResponse.toTeam)
+        let teams: [Team] = teamsData.data.map(TeamResponse.mapToTeam)
         
         return teams
     }
     
+    // MARK: - Games
+    nonisolated struct BaseResponse<T: Codable>: Codable {
+        let data: [T]
+        let meta: Meta
+    }
+    
+    nonisolated struct Game: Codable {
+        let id, homeTeamScore, visitorTeamScore: Int
+        let homeTeam, visitorTeam: TeamResponse
+        
+        enum CodingKeys: String, CodingKey {
+            case id
+            case homeTeamScore = "home_team_score"
+            case visitorTeamScore = "visitor_team_score"
+            case homeTeam = "home_team"
+            case visitorTeam = "visitor_team"
+        }
+        
+        static func mapToTeamGame(_ game: Self) -> TeamGame {
+            TeamGame(
+                id: game.id,
+                homeTeam: game.homeTeam.fullName,
+                homeScore: String(game.homeTeamScore),
+                visitorTeam: game.visitorTeam.fullName,
+                visitorScore: String(game.visitorTeamScore)
+            )
+        }
+    }
+    
+    struct Meta: Codable {
+        let nextCursor, perPage: Int
+        
+        enum CodingKeys: String, CodingKey {
+            case nextCursor = "next_cursor"
+            case perPage = "per_page"
+        }
+    }
+    
+    @concurrent
+    func listGames(forTeam teamId: Int) async throws -> [TeamGame] {
+        let url = URL(string: "https://api.balldontlie.io/v1/games")!.appendingTeamID(teamId)!
+        
+        var request = URLRequest(url: url)
+        request.addValue(Credentials.API_KEY, forHTTPHeaderField: "Authorization")
+        
+        let (data, urlResponse) = try await URLSession.shared.data(for: request)
+        try checkResponse(urlResponse)
+        
+        let gameData = try JSONDecoder().decode(BaseResponse<Game>.self, from: data)
+        let teamGames = gameData.data.map(Game.mapToTeamGame)
+        
+        return teamGames
+    }
+    
+    // MARK: - Players
+    nonisolated struct PlayerResponse: Codable {
+        let id: Int
+        let firstName, lastName: String
+        let team: TeamResponse
+        
+        enum CodingKeys: String, CodingKey {
+            case id
+            case firstName = "first_name"
+            case lastName = "last_name"
+            case team
+        }
+        
+        static func mapToPlayer(_ response: Self) -> Player {
+            Player(
+                id: response.id,
+                firstName: response.firstName,
+                lastName: response.lastName,
+                team: TeamResponse.mapToTeam(response.team)
+            )
+        }
+    }
+    
+    @concurrent
+    func searchPlayers(query: String) async throws -> [Player] {
+        let url = URL(string: "https://api.balldontlie.io/v1/players")!.appendingSearch(query)!
+        
+        var request = URLRequest(url: url)
+        request.addValue(Credentials.API_KEY, forHTTPHeaderField: "Authorization")
+        
+        let (data, urlResponse) = try await URLSession.shared.data(for: request)
+        try checkResponse(urlResponse)
+        
+        let playersResponse = try JSONDecoder().decode(BaseResponse<PlayerResponse>.self, from: data)
+        let players = playersResponse.data.map(PlayerResponse.mapToPlayer)
+        
+        return players
+    }
+    
+    
+    
+    // MARK: - Shared
     private nonisolated func checkResponse(_ urlResponse: URLResponse?, forStatus statuses: [Int] = Array(200..<300)) throws {
         let httpResponse = urlResponse as? HTTPURLResponse
         guard statuses.contains(httpResponse?.statusCode ?? 500) else {
             throw URLError(.badServerResponse)
         }
+    }
+}
+
+
+nonisolated extension URL {
+    func appendingTeamID(_ id: Int) -> URL? {
+        let withTeamIDs = self
+        return withTeamIDs.appendQuery(items: [ URLQueryItem(name: "team_ids[]", value: String(id)) ])
+    }
+    
+    func appendingSearch(_ query: String) -> URL? {
+        let withSearch = self
+        return withSearch.appendQuery(items: [ URLQueryItem(name: "search", value: query) ])
     }
 }
