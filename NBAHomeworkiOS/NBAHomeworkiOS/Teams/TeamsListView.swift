@@ -23,6 +23,13 @@ struct TeamsListView: View {
                 errorView(error)
             }
         }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(teamsViewModel.filter.rawValue) {
+                    teamsViewModel.changeFilter()
+                }
+            }
+        }
         .refreshable {
             fetchTeams()
         }
@@ -69,10 +76,8 @@ private extension TeamsListView {
     
     @ViewBuilder
     private func teamsView(_ teams: [Team]) -> some View {
-        List {
-            ForEach(teams) { team in
-                teamRow(team)
-            }
+        List(teams) { team in
+            teamRow(team)
         }
     }
     

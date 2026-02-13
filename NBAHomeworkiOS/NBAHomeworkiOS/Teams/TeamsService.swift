@@ -27,9 +27,9 @@ final class TeamsService {
         static func toTeam(_ response: TeamResponse) -> Team {
             Team(
                 id: response.id,
-                fullName: response.conference,
+                fullName: response.fullName,
                 city: response.city,
-                conference: response.fullName
+                conference: response.conference
             )
         }
     }
