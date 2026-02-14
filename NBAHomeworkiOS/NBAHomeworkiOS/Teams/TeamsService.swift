@@ -90,7 +90,7 @@ final class TeamsService {
     }
     
     @concurrent
-    func listGames(forTeam teamId: Int, cursor: Int? = nil) async throws -> ([TeamGame], Bool, Int?) {
+    func listGames(forTeam teamId: Int, cursor: Int? = nil) async throws -> ([TeamGame], Int?) {
         let url = URL(string: "https://api.balldontlie.io/v1/games")!.appendingTeamID(teamId)!.appendingCursor(cursor)!
         
         var request = URLRequest(url: url)
@@ -102,7 +102,7 @@ final class TeamsService {
         let gameData = try JSONDecoder().decode(BaseResponse<Game>.self, from: data)
         let teamGames = gameData.data.map(Game.mapToTeamGame)
         
-        return (teamGames, gameData.meta.nextCursor != nil, gameData.meta.nextCursor)
+        return (teamGames, gameData.meta.nextCursor)
     }
     
     // MARK: - Players
@@ -148,8 +148,9 @@ final class TeamsService {
     
     // MARK: - Shared
     private nonisolated func checkResponse(_ urlResponse: URLResponse?, forStatus statuses: [Int] = Array(200..<300)) throws {
-        let httpResponse = urlResponse as? HTTPURLResponse
-        guard statuses.contains(httpResponse?.statusCode ?? 500) else {
+        guard let httpResponse = urlResponse as? HTTPURLResponse else { throw URLError(.unknown) }
+        guard statuses.contains(httpResponse.statusCode) else {
+            print("BAD RESPONSE: \(httpResponse)")
             throw URLError(.badServerResponse)
         }
     }

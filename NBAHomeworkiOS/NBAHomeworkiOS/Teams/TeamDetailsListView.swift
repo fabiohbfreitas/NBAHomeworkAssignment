@@ -24,15 +24,15 @@ struct TeamDetailsListView: View {
                     teamGamesView(teams)
                 case .error:
                     ErrorWithRetry(
-                        title: "Error when fetching details for \(selectedTeam.fullName)",
+                        title: "Error while fetching details for \(selectedTeam.fullName)",
                         tryAgainAction: {
-                            fetchTeamGames()
+                            fetchInitialGames()
                         }
                     )
                 }
             }
             .refreshable {
-                fetchTeamGames()
+                fetchInitialGames()
             }
             .task {
                 await teamsViewModel.fetchInitialGames(forId: selectedTeam.id)
@@ -44,9 +44,15 @@ struct TeamDetailsListView: View {
 
 private extension TeamDetailsListView {
     
-    private func fetchTeamGames() {
+    private func fetchInitialGames() {
         Task {
             await teamsViewModel.fetchInitialGames(forId: selectedTeam.id)
+        }
+    }
+    
+    private func fetchNextGames() {
+        Task {
+            await teamsViewModel.fetchNextGames(forId: selectedTeam.id)
         }
     }
     
@@ -58,7 +64,7 @@ private extension TeamDetailsListView {
                 .bold()
                 .foregroundStyle(.red)
             Button("Try again") {
-                fetchTeamGames()
+                fetchInitialGames()
             }
             .tint(.red)
             .buttonStyle(.borderedProminent)
@@ -76,21 +82,15 @@ private extension TeamDetailsListView {
             ForEach(teams) { team in
                 gameRow(team)
                     .onAppear {
-                        // Trigger pagination when the last item appears
                         if team.id == teams.last?.id {
-                            Task { await teamsViewModel.fetchNextGames(forId: selectedTeam.id) }
+                            fetchNextGames()
                         }
                     }
             }
             if teamsViewModel.isPaginating {
-                Section(footer:
-                    HStack {
-                        Spacer()
-                        ProgressView()
-                            .padding(.vertical, 8)
-                        Spacer()
-                    }
-                ) { EmptyView() }
+                ProgressView()
+                    .frame(maxWidth: .infinity)
+                    .listRowSeparator(.hidden)
             }
         }
         .listStyle(.plain)

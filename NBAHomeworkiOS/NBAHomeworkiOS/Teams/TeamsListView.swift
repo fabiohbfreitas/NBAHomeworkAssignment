@@ -19,7 +19,7 @@ struct TeamsListView: View {
                 case .data(let teams):
                     teamsView(teams)
                 case .error:
-                    ErrorWithRetry(title: "Error when fetching teams", tryAgainAction: fetchTeams)
+                    ErrorWithRetry(title: "Error while fetching teams", tryAgainAction: fetchTeams)
                 }
             }
             .sheet(isPresented: $teamsViewModel.isFilterSheetActive) {
