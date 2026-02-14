@@ -11,25 +11,27 @@ struct TeamPlayerView: View {
     @ObservedObject var teamPlayerViewModel: TeamPlayerViewModel
     
     var body: some View {
-        VStack {
-            switch teamPlayerViewModel.searchResults {
-            case .idle:
-                EmptyView()
-            case .loading:
-                SimpleLoading()
-            case .data(let results):
-                playersView(results)
-            case .error:
-                ErrorWithRetry(
-                    title: "Failed to perform search for \(teamPlayerViewModel.query)",
-                    tryAgainAction: {
-                        teamPlayerViewModel.searchPlayers()
-                    }
-                )
+        NavigationView {
+            VStack {
+                switch teamPlayerViewModel.searchResults {
+                case .idle:
+                    EmptyView()
+                case .loading:
+                    SimpleLoading()
+                case .data(let results):
+                    playersView(results)
+                case .error:
+                    ErrorWithRetry(
+                        title: "Failed to perform search for \(teamPlayerViewModel.query)",
+                        tryAgainAction: {
+                            teamPlayerViewModel.searchPlayers()
+                        }
+                    )
+                }
             }
+            .navigationTitle("Search for player")
+            .searchable(text: $teamPlayerViewModel.query, prompt: "Search")
         }
-        .navigationTitle(teamPlayerViewModel.query.isEmpty ? "Players" : "Results for \"\(teamPlayerViewModel.query)\"")
-        .searchable(text: $teamPlayerViewModel.query, prompt: "Search")
     }
     
     @ViewBuilder
@@ -40,7 +42,12 @@ struct TeamPlayerView: View {
                 .foregroundStyle(.secondary)
         } else {
             List(players) { player in
-                playerRow(player)
+                NavigationLink {
+                    TeamDetailsListView(selectedTeam: player.team, teamsViewModel: TeamDetailsViewModel(teamsService: TeamsService()))
+                } label: {
+                    playerRow(player)
+                }
+
             }
         }
     }

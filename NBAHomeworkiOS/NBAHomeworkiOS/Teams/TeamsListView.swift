@@ -11,33 +11,35 @@ struct TeamsListView: View {
     @ObservedObject var teamsViewModel: TeamsViewModel
     
     var body: some View {
-        VStack {
-            switch teamsViewModel.teams {
-            case .loading, .idle:
-                SimpleLoading()
-            case .data(let teams):
-                teamsView(teams)
-            case .error:
-                ErrorWithRetry(title: "Error when fetching teams", tryAgainAction: fetchTeams)
-            }
-        }
-        .sheet(isPresented: $teamsViewModel.isFilterSheetActive) {
-            TeamFilterSheet(teamsViewModel: teamsViewModel)
-        }
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button(teamsViewModel.filter.rawValue) {
-                    teamsViewModel.isFilterSheetActive = true
+        NavigationView {
+            VStack {
+                switch teamsViewModel.teams {
+                case .loading, .idle:
+                    SimpleLoading()
+                case .data(let teams):
+                    teamsView(teams)
+                case .error:
+                    ErrorWithRetry(title: "Error when fetching teams", tryAgainAction: fetchTeams)
                 }
             }
+            .sheet(isPresented: $teamsViewModel.isFilterSheetActive) {
+                TeamFilterSheet(teamsViewModel: teamsViewModel)
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(teamsViewModel.filter.rawValue) {
+                        teamsViewModel.isFilterSheetActive = true
+                    }
+                }
+            }
+            .refreshable {
+                fetchTeams()
+            }
+            .task {
+                await teamsViewModel.fetchTeams()
+            }
+            .navigationTitle("Home")
         }
-        .refreshable {
-            fetchTeams()
-        }
-        .task {
-            await teamsViewModel.fetchTeams()
-        }
-        .navigationTitle("Home")
     }
 }
 
@@ -51,7 +53,11 @@ private extension TeamsListView {
     @ViewBuilder
     private func teamsView(_ teams: [Team]) -> some View {
         List(teams) { team in
-            teamRow(team)
+            NavigationLink {
+                TeamDetailsListView(selectedTeam: team, teamsViewModel: TeamDetailsViewModel(teamsService: TeamsService()))
+            } label: {
+                teamRow(team)
+            }
         }
     }
     

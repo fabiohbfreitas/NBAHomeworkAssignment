@@ -13,31 +13,32 @@ struct TeamDetailsListView: View {
     @ObservedObject var teamsViewModel: TeamDetailsViewModel
     
     var body: some View {
-        
-        VStack {
-            switch teamsViewModel.teams {
-            case .idle:
-                EmptyView()
-            case .loading:
-                SimpleLoading()
-            case .data(let teams):
-                teamGamesView(teams)
-            case .error:
-                ErrorWithRetry(
-                    title: "Error when fetching details for \(selectedTeam.fullName)",
-                    tryAgainAction: {
-                        fetchTeamGames()
-                    }
-                )
+        NavigationView {
+            VStack {
+                switch teamsViewModel.teams {
+                case .idle:
+                    EmptyView()
+                case .loading:
+                    SimpleLoading()
+                case .data(let teams):
+                    teamGamesView(teams)
+                case .error:
+                    ErrorWithRetry(
+                        title: "Error when fetching details for \(selectedTeam.fullName)",
+                        tryAgainAction: {
+                            fetchTeamGames()
+                        }
+                    )
+                }
             }
+            .refreshable {
+                fetchTeamGames()
+            }
+            .task {
+                await teamsViewModel.fetchTeamGames(forId: selectedTeam.id)
+            }
+            .navigationTitle(selectedTeam.fullName)
         }
-        .refreshable {
-            fetchTeamGames()
-        }
-        .task {
-            await teamsViewModel.fetchTeamGames(forId: selectedTeam.id)
-        }
-        .navigationBarTitle(selectedTeam.fullName, displayMode: .inline)
     }
 }
 

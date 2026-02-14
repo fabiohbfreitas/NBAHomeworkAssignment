@@ -10,9 +10,22 @@
 		9F86DEF42F3FA1D600D08AFC /* NBAHomeworkiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NBAHomeworkiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		9F6CAA792F40BED7005FA695 /* Exceptions for "NBAHomeworkiOS" folder in "NBAHomeworkiOS" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 9F86DEF32F3FA1D600D08AFC /* NBAHomeworkiOS */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		9F86DEF62F3FA1D600D08AFC /* NBAHomeworkiOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				9F6CAA792F40BED7005FA695 /* Exceptions for "NBAHomeworkiOS" folder in "NBAHomeworkiOS" target */,
+			);
 			path = NBAHomeworkiOS;
 			sourceTree = "<group>";
 		};
@@ -261,6 +274,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NBAHomeworkiOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "NBA Homework Assignment";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -300,6 +314,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NBAHomeworkiOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "NBA Homework Assignment";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

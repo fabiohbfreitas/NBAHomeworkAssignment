@@ -129,7 +129,7 @@ final class TeamsService {
     
     @concurrent
     func searchPlayers(query: String) async throws -> [Player] {
-        let url = URL(string: "https://api.balldontlie.io/v1/players")!.appendingSearch(query)!
+        let url = URL(string: "https://api.balldontlie.io/v1/players")!.appendingSearch(query.lowercased())!
         
         var request = URLRequest(url: url)
         request.addValue(Credentials.API_KEY, forHTTPHeaderField: "Authorization")
