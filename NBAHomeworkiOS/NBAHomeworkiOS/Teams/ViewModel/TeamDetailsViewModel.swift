@@ -17,15 +17,43 @@ final class TeamDetailsViewModel: ObservableObject {
     }
     
     @Published var teams: Resource<[TeamGame]> = .idle
+    private var cursor: Int? = nil
+    @Published var isPaginating: Bool = false
+    private var hasNext: Bool = false
     
-    func fetchTeamGames(forId id: Int) async {
+    func fetchInitialGames(forId id: Int) async {
         do {
+            isPaginating = false
             teams = .loading
-            let listedGames = try await teamsService.listGames(forTeam: id)
+            let (listedGames, hasNextPage, next_cursor) = try await teamsService.listGames(forTeam: id)
             teams = .data(listedGames)
+            hasNext = hasNextPage
+            cursor = next_cursor
         } catch {
             teams = .error(error)
             print("ERROR: \(error.localizedDescription)")
         }
     }
+    
+    func fetchNextGames(forId id: Int) async {
+        guard !isPaginating, hasNext, let next = cursor else { return }
+        isPaginating = true
+        do {
+            let (listedGames, hasNextPage, next_cursor) = try await teamsService.listGames(forTeam: id, cursor: next)
+            switch teams {
+            case .data(let current):
+                let combined = current + listedGames
+                teams = .data(combined)
+            case .idle, .loading, .error:
+                teams = .data(listedGames)
+            }
+            hasNext = hasNextPage
+            cursor = next_cursor
+            isPaginating = false
+        } catch {
+            isPaginating = false
+            print("ERROR (pagination): \(error.localizedDescription)")
+        }
+    }
 }
+

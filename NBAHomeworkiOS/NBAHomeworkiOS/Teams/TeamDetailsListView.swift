@@ -35,7 +35,7 @@ struct TeamDetailsListView: View {
                 fetchTeamGames()
             }
             .task {
-                await teamsViewModel.fetchTeamGames(forId: selectedTeam.id)
+                await teamsViewModel.fetchInitialGames(forId: selectedTeam.id)
             }
             .navigationTitle(selectedTeam.fullName)
         }
@@ -46,7 +46,7 @@ private extension TeamDetailsListView {
     
     private func fetchTeamGames() {
         Task {
-            await teamsViewModel.fetchTeamGames(forId: selectedTeam.id)
+            await teamsViewModel.fetchInitialGames(forId: selectedTeam.id)
         }
     }
     
@@ -72,9 +72,28 @@ private extension TeamDetailsListView {
     
     @ViewBuilder
     private func teamGamesView(_ teams: [TeamGame]) -> some View {
-        List(teams) { team in
-            gameRow(team)
+        List {
+            ForEach(teams) { team in
+                gameRow(team)
+                    .onAppear {
+                        // Trigger pagination when the last item appears
+                        if team.id == teams.last?.id {
+                            Task { await teamsViewModel.fetchNextGames(forId: selectedTeam.id) }
+                        }
+                    }
+            }
+            if teamsViewModel.isPaginating {
+                Section(footer:
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                            .padding(.vertical, 8)
+                        Spacer()
+                    }
+                ) { EmptyView() }
+            }
         }
+        .listStyle(.plain)
     }
     
     @ViewBuilder
@@ -116,3 +135,4 @@ private extension TeamDetailsListView {
         TeamDetailsListView(selectedTeam: Team(id: 6, fullName: "Cleveleand Cavaliers", city: "City", conference: "Conference") ,teamsViewModel: TeamDetailsViewModel(teamsService: TeamsService()))
     }
 }
+

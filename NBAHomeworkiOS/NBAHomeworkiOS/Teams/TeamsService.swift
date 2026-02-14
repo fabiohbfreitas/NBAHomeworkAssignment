@@ -80,7 +80,8 @@ final class TeamsService {
     }
     
     struct Meta: Codable {
-        let nextCursor, perPage: Int
+        let nextCursor: Int?
+        let perPage: Int
         
         enum CodingKeys: String, CodingKey {
             case nextCursor = "next_cursor"
@@ -89,8 +90,8 @@ final class TeamsService {
     }
     
     @concurrent
-    func listGames(forTeam teamId: Int) async throws -> [TeamGame] {
-        let url = URL(string: "https://api.balldontlie.io/v1/games")!.appendingTeamID(teamId)!
+    func listGames(forTeam teamId: Int, cursor: Int? = nil) async throws -> ([TeamGame], Bool, Int?) {
+        let url = URL(string: "https://api.balldontlie.io/v1/games")!.appendingTeamID(teamId)!.appendingCursor(cursor)!
         
         var request = URLRequest(url: url)
         request.addValue(Credentials.API_KEY, forHTTPHeaderField: "Authorization")
@@ -101,7 +102,7 @@ final class TeamsService {
         let gameData = try JSONDecoder().decode(BaseResponse<Game>.self, from: data)
         let teamGames = gameData.data.map(Game.mapToTeamGame)
         
-        return teamGames
+        return (teamGames, gameData.meta.nextCursor != nil, gameData.meta.nextCursor)
     }
     
     // MARK: - Players
@@ -156,6 +157,12 @@ final class TeamsService {
 
 
 nonisolated extension URL {
+    func appendingCursor(_ cursor: Int?) -> URL? {
+        guard let cursor else { return self }
+        let withCursor = self
+        return withCursor.appendQuery(items: [ URLQueryItem(name: "cursor", value: String(cursor)) ])
+    }
+    
     func appendingTeamID(_ id: Int) -> URL? {
         let withTeamIDs = self
         return withTeamIDs.appendQuery(items: [ URLQueryItem(name: "team_ids[]", value: String(id)) ])
@@ -166,3 +173,4 @@ nonisolated extension URL {
         return withSearch.appendQuery(items: [ URLQueryItem(name: "search", value: query) ])
     }
 }
+
