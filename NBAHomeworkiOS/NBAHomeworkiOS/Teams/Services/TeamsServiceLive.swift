@@ -5,7 +5,6 @@
 //  Created by Fabio Freitas on 14/02/26.
 //
 
-
 import SwiftUI
 
 final class TeamsServiceLive: TeamsService {

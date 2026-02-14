@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct NBAHomeworkiOSApp: App {
+    
+    
     var body: some Scene {
         WindowGroup {
-            TeamsHomeView(teamsService: TeamsServiceLive(), tabs: tabs)
+            TeamsHomeView.makeHomeView()
         }
     }
 }

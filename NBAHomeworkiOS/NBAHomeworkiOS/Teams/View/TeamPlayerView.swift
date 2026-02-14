@@ -43,13 +43,18 @@ struct TeamPlayerView: View {
         } else {
             List(players) { player in
                 NavigationLink {
-                    TeamDetailsListView(selectedTeam: player.team, teamsViewModel: TeamDetailsViewModel(teamsService: TeamsServiceLive()))
+                    makeDestination(forTeam: player.team)
                 } label: {
                     playerRow(player)
                 }
-
+                
             }
         }
+    }
+    
+    @ViewBuilder
+    private func makeDestination(forTeam team: Team) -> some View {
+        TeamDetailsListView(selectedTeam: team, teamsViewModel: TeamDetailsViewModel(teamsService: TeamsServiceFactory.makeTeamService()))
     }
     
     @ViewBuilder

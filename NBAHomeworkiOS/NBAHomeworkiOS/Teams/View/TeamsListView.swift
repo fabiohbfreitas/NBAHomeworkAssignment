@@ -43,6 +43,8 @@ struct TeamsListView: View {
     }
 }
 
+
+
 private extension TeamsListView {
     private func fetchTeams() {
         Task {
@@ -54,11 +56,22 @@ private extension TeamsListView {
     private func teamsView(_ teams: [Team]) -> some View {
         List(teams) { team in
             NavigationLink {
-                TeamDetailsListView(selectedTeam: team, teamsViewModel: TeamDetailsViewModel(teamsService: TeamsServiceLive()))
+                makeDestination(forTeam: team)
             } label: {
                 teamRow(team)
             }
         }
+    }
+    
+    @ViewBuilder
+    private func makeDestination(forTeam team: Team) -> some View {
+        TeamDetailsListView(
+            selectedTeam: team,
+            teamsViewModel:
+                TeamDetailsViewModel(
+                    teamsService: TeamsServiceFactory.makeTeamService()
+                )
+        )
     }
     
     @ViewBuilder

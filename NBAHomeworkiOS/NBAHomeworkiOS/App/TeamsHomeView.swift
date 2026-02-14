@@ -15,31 +15,10 @@ struct HomeTab: Identifiable {
     var id: String { name }
 }
 
-let service = TeamsServiceInMemory()
-
-let tabs: [HomeTab] = [
-    HomeTab(
-        name: "Home",
-        icon: "house.fill",
-        view: AnyView(
-                TeamsListView(teamsViewModel: TeamsViewModel(teamsService: service))
-        )
-    ),
-    HomeTab(
-        name: "Players",
-        icon: "person.fill",
-        view: AnyView(
-            TeamPlayerView(teamPlayerViewModel: TeamPlayerViewModel(teamsService: service))
-        )
-    )
-]
-
 struct TeamsHomeView: View {
-    private let teamsService: TeamsService
     private let tabs: [HomeTab]
     
-    init(teamsService: TeamsService, tabs: [HomeTab]) {
-        self.teamsService = teamsService
+    init(tabs: [HomeTab]) {
         self.tabs = tabs
     }
     
@@ -53,8 +32,31 @@ struct TeamsHomeView: View {
             }
         }
     }
+    
+    static func makeHomeView() -> some View {
+        let service: TeamsService = TeamsServiceFactory.makeTeamService()
+
+        let tabs: [HomeTab] = [
+            HomeTab(
+                name: "Home",
+                icon: "house.fill",
+                view: AnyView(
+                        TeamsListView(teamsViewModel: TeamsViewModel(teamsService: service))
+                )
+            ),
+            HomeTab(
+                name: "Players",
+                icon: "person.fill",
+                view: AnyView(
+                    TeamPlayerView(teamPlayerViewModel: TeamPlayerViewModel(teamsService: service))
+                )
+            )
+        ]
+        
+        return TeamsHomeView(tabs: tabs)
+    }
 }
 
 #Preview {
-    TeamsHomeView(teamsService: TeamsServiceInMemory(), tabs: tabs)
+    TeamsHomeView.makeHomeView()
 }
