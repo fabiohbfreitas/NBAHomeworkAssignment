@@ -43,7 +43,7 @@ struct TeamPlayerView: View {
         } else {
             List(players) { player in
                 NavigationLink {
-                    TeamDetailsListView(selectedTeam: player.team, teamsViewModel: TeamDetailsViewModel(teamsService: TeamsService()))
+                    TeamDetailsListView(selectedTeam: player.team, teamsViewModel: TeamDetailsViewModel(teamsService: TeamsServiceLive()))
                 } label: {
                     playerRow(player)
                 }
@@ -71,7 +71,7 @@ struct TeamPlayerView: View {
 
 #Preview {
     NavigationView {
-        TeamPlayerView(teamPlayerViewModel: TeamPlayerViewModel(teamsService: TeamsService()))
+        TeamPlayerView(teamPlayerViewModel: TeamPlayerViewModel(teamsService: TeamsServiceInMemory()))
     }
 }
 

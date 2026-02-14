@@ -11,7 +11,7 @@ import SwiftUI
 struct NBAHomeworkiOSApp: App {
     var body: some Scene {
         WindowGroup {
-            HomeView()
+            TeamsHomeView(teamsService: TeamsServiceLive(), tabs: tabs)
         }
     }
 }

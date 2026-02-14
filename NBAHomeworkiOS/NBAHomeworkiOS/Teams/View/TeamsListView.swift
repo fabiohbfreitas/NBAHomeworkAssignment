@@ -54,7 +54,7 @@ private extension TeamsListView {
     private func teamsView(_ teams: [Team]) -> some View {
         List(teams) { team in
             NavigationLink {
-                TeamDetailsListView(selectedTeam: team, teamsViewModel: TeamDetailsViewModel(teamsService: TeamsService()))
+                TeamDetailsListView(selectedTeam: team, teamsViewModel: TeamDetailsViewModel(teamsService: TeamsServiceLive()))
             } label: {
                 teamRow(team)
             }
@@ -83,6 +83,6 @@ private extension TeamsListView {
 
 #Preview {
     NavigationView {
-        TeamsListView(teamsViewModel: TeamsViewModel(teamsService: TeamsService()))
+        TeamsListView(teamsViewModel: TeamsViewModel(teamsService: TeamsServiceInMemory()))
     }
 }

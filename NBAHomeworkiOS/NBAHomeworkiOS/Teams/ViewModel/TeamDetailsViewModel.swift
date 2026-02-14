@@ -24,7 +24,7 @@ final class TeamDetailsViewModel: ObservableObject {
         do {
             isPaginating = false
             teams = .loading
-            let (listedGames, next_cursor) = try await teamsService.listGames(forTeam: id)
+            let (listedGames, next_cursor) = try await teamsService.listGames(forTeam: id, cursor: nil)
             teams = .data(listedGames)
             cursor = next_cursor
         } catch {

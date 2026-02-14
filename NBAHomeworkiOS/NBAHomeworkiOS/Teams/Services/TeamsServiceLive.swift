@@ -1,13 +1,19 @@
 //
-//  TeamsService.swift
+//  LiveTeamsService.swift
 //  NBAHomeworkiOS
 //
-//  Created by Fabio Freitas on 13/02/26.
+//  Created by Fabio Freitas on 14/02/26.
 //
+
 
 import SwiftUI
 
-final class TeamsService {
+final class TeamsServiceLive: TeamsService {
+    let httpClient: HTTPClient
+    
+    init(httpClient: HTTPClient = URLSession.shared) {
+        self.httpClient = httpClient
+    }
     
     // MARK: - Teams
     nonisolated struct ListTeamsRoot: Codable {
@@ -40,7 +46,7 @@ final class TeamsService {
         var request = URLRequest(url: URL(string: "https://api.balldontlie.io/v1/teams")!)
         request.addValue(Credentials.API_KEY, forHTTPHeaderField: "Authorization")
         
-        let (data, urlResponse) = try await URLSession.shared.data(for: request)
+        let (data, urlResponse) = try await httpClient.makeRequest(request)
         try checkResponse(urlResponse)
         
         let teamsData = try JSONDecoder().decode(ListTeamsRoot.self, from: data)
@@ -96,7 +102,7 @@ final class TeamsService {
         var request = URLRequest(url: url)
         request.addValue(Credentials.API_KEY, forHTTPHeaderField: "Authorization")
         
-        let (data, urlResponse) = try await URLSession.shared.data(for: request)
+        let (data, urlResponse) = try await httpClient.makeRequest(request)
         try checkResponse(urlResponse)
         
         let gameData = try JSONDecoder().decode(BaseResponse<Game>.self, from: data)
@@ -135,7 +141,7 @@ final class TeamsService {
         var request = URLRequest(url: url)
         request.addValue(Credentials.API_KEY, forHTTPHeaderField: "Authorization")
         
-        let (data, urlResponse) = try await URLSession.shared.data(for: request)
+        let (data, urlResponse) = try await httpClient.makeRequest(request)
         try checkResponse(urlResponse)
         
         let playersResponse = try JSONDecoder().decode(BaseResponse<PlayerResponse>.self, from: data)
@@ -156,7 +162,6 @@ final class TeamsService {
     }
 }
 
-
 nonisolated extension URL {
     func appendingCursor(_ cursor: Int?) -> URL? {
         guard let cursor else { return self }
@@ -174,4 +179,3 @@ nonisolated extension URL {
         return withSearch.appendQuery(items: [ URLQueryItem(name: "search", value: query) ])
     }
 }
-

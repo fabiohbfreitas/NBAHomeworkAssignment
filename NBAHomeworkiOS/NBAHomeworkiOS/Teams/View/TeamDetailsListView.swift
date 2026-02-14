@@ -132,7 +132,7 @@ private extension TeamDetailsListView {
 
 #Preview {
     NavigationView {
-        TeamDetailsListView(selectedTeam: Team(id: 6, fullName: "Cleveleand Cavaliers", city: "City", conference: "Conference") ,teamsViewModel: TeamDetailsViewModel(teamsService: TeamsService()))
+        TeamDetailsListView(selectedTeam: TeamsServiceInMemory.sampleTeam ,teamsViewModel: TeamDetailsViewModel(teamsService: TeamsServiceInMemory()))
     }
 }
 
