@@ -8,11 +8,16 @@
 import SwiftUI
 
 struct HomeView: View {
-    @StateObject private var teamsViewModel: TeamsViewModel = .init(teamsService: TeamsService())
+    
+    private static let teamsService = TeamsService()
+    
+    @StateObject private var teamsViewModel: TeamsViewModel = .init(teamsService: teamsService)
+    @StateObject private var teamGamesViewModel: TeamDetailsViewModel = .init(teamsService: teamsService)
     
     var body: some View {
         NavigationView {
             TeamsListView(teamsViewModel: teamsViewModel)
+//            TeamDetailsListView(selectedTeam: Team(id: 6, fullName: "Cleveland Caveliers", city: "City", conference: "Conference"), teamsViewModel: teamGamesViewModel)
         }
     }
 }

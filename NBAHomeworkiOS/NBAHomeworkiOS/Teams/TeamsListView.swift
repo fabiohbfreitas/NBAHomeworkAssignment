@@ -16,11 +16,11 @@ struct TeamsListView: View {
         VStack {
             switch teamsViewModel.teams {
             case .loading, .idle:
-                progress
+                SimpleProgress()
             case .data(let teams):
                 teamsView(teams)
-            case .error(let error):
-                errorView(error)
+            case .error:
+                ErrorWithRetry(title: "Error when fetching teams", tryAgainAction: fetchTeams)
             }
         }
         .toolbar {
@@ -47,32 +47,6 @@ private extension TeamsListView {
             await teamsViewModel.fetchTeams()
         }
     }
-    
-    private var progress: some View {
-        VStack {
-            ProgressView()
-        }
-    }
-    
-    @ViewBuilder
-    private func errorView(_ error: Error) -> some View {
-        VStack {
-            Text("Error while fetching teams")
-                .font(.callout)
-                .bold()
-                .foregroundStyle(.red)
-            Button("Try again") {
-                fetchTeams()
-            }
-            .tint(.red)
-            .buttonStyle(.borderedProminent)
-            
-        }
-        .padding()
-        .frame(maxWidth: .infinity)
-        .background(Color(.red).opacity(0.1))
-    }
-    
     
     @ViewBuilder
     private func teamsView(_ teams: [Team]) -> some View {
