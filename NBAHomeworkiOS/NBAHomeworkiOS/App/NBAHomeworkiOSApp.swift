@@ -10,6 +10,9 @@ import SwiftUI
 @main
 struct NBAHomeworkiOSApp: App {
     
+    init() {
+        Credentials.preflightCheck()
+    }
     
     var body: some Scene {
         WindowGroup {
