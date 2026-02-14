@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SimpleProgress: View {
+struct SimpleLoading: View {
     var body: some View {
         VStack {
             ProgressView()
@@ -16,5 +16,5 @@ struct SimpleProgress: View {
 }
 
 #Preview {
-    SimpleProgress()
+    SimpleLoading()
 }

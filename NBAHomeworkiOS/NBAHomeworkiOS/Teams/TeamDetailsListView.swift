@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Combine
 
 struct TeamDetailsListView: View {
     let selectedTeam: Team
@@ -20,7 +19,7 @@ struct TeamDetailsListView: View {
             case .idle:
                 EmptyView()
             case .loading:
-                SimpleProgress()
+                SimpleLoading()
             case .data(let teams):
                 teamGamesView(teams)
             case .error:

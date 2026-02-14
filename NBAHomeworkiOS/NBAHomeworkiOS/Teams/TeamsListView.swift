@@ -6,17 +6,15 @@
 //
 
 import SwiftUI
-import Combine
 
 struct TeamsListView: View {
     @ObservedObject var teamsViewModel: TeamsViewModel
     
     var body: some View {
-        
         VStack {
             switch teamsViewModel.teams {
             case .loading, .idle:
-                SimpleProgress()
+                SimpleLoading()
             case .data(let teams):
                 teamsView(teams)
             case .error:
@@ -41,7 +39,6 @@ struct TeamsListView: View {
 }
 
 private extension TeamsListView {
-    
     private func fetchTeams() {
         Task {
             await teamsViewModel.fetchTeams()
