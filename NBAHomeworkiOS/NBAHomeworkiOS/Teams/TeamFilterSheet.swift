@@ -30,7 +30,7 @@ struct TeamFilterSheet: View {
                 }
                 .listRowSeparator(.hidden)
             }
-            .navigationTitle("Filters teams")
+            .navigationTitle("Filters")
         }
     }
 }

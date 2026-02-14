@@ -12,15 +12,20 @@ struct HomeView: View {
     private static let teamsService = TeamsService()
     
     @StateObject private var teamsViewModel: TeamsViewModel = .init(teamsService: teamsService)
-    @StateObject private var teamGamesViewModel: TeamDetailsViewModel = .init(teamsService: teamsService)
     @StateObject private var teamPlayerViewModel: TeamPlayerViewModel = .init(teamsService: teamsService)
     
     var body: some View {
-        NavigationView {
+        TabView {
             TeamsListView(teamsViewModel: teamsViewModel)
-//            TeamDetailsListView(selectedTeam: Team(id: 6, fullName: "Cleveland Caveliers", city: "City", conference: "Conference"), teamsViewModel: teamGamesViewModel)
-//            TeamPlayerView(teamPlayerViewModel: teamPlayerViewModel)
+                .tabItem {
+                    Label("Home", systemImage: "house.fill")
+                }
+            TeamPlayerView(teamPlayerViewModel: teamPlayerViewModel)
+                .tabItem {
+                    Label("Players", systemImage: "person.fill")
+                }
         }
+        .navigationBarHidden(true)
     }
 }
 

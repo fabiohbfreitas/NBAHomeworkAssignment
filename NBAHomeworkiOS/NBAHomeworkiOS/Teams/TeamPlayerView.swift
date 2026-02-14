@@ -29,7 +29,7 @@ struct TeamPlayerView: View {
                     )
                 }
             }
-            .navigationTitle("Search for player")
+            .navigationTitle("Player")
             .searchable(text: $teamPlayerViewModel.query, prompt: "Search")
         }
     }
