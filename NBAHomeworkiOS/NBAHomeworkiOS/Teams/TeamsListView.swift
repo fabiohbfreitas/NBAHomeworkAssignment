@@ -21,10 +21,13 @@ struct TeamsListView: View {
                 ErrorWithRetry(title: "Error when fetching teams", tryAgainAction: fetchTeams)
             }
         }
+        .sheet(isPresented: $teamsViewModel.isFilterSheetActive) {
+            TeamFilterSheet(teamsViewModel: teamsViewModel)
+        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button(teamsViewModel.filter.rawValue) {
-                    teamsViewModel.changeFilter()
+                    teamsViewModel.isFilterSheetActive = true
                 }
             }
         }

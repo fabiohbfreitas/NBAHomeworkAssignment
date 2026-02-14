@@ -16,6 +16,7 @@ final class TeamsViewModel: ObservableObject {
     }
     
     @Published var teams: Resource<[Team]> = .idle
+    @Published var isFilterSheetActive = false
     @Published var filter: SortingFilter = .name
     
     func fetchTeams() async {
@@ -30,7 +31,17 @@ final class TeamsViewModel: ObservableObject {
         }
     }
     
-    func teamsSorted(_ teams: [Team], by filter: SortingFilter) -> [Team] {
+    func applyFilters() {
+        guard case .data(let previousTeams) = teams else {
+            return
+        }
+        let orderedTeams = teamsSorted(previousTeams, by: filter)
+        withAnimation {
+            teams = .data(orderedTeams)
+        }
+    }
+    
+    private func teamsSorted(_ teams: [Team], by filter: SortingFilter) -> [Team] {
         switch filter {
         case .name:
             return teams.sorted(by: { $0.fullName < $1.fullName })
@@ -38,20 +49,6 @@ final class TeamsViewModel: ObservableObject {
             return teams.sorted(by: { $0.city < $1.city })
         case .conference:
             return teams.sorted(by: { $0.conference < $1.conference })
-        }
-    }
-    
-    func changeFilter() {
-        guard case .data(let previousTeams) = teams else {
-            return
-        }
-        let options = SortingFilter.allCases
-        let next = (options.firstIndex(of: filter)! + 1) % options.count
-        filter = options[next]
-        let sortedTeams = teamsSorted(previousTeams, by: filter)
-        withAnimation {
-            teams = .data(sortedTeams)
-            
         }
     }
 }
