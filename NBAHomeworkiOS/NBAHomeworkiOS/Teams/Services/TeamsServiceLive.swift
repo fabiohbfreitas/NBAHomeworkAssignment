@@ -7,12 +7,10 @@
 
 import SwiftUI
 
-fileprivate let withRateLimiter = RateLimitDecorator(decorating: URLSession.shared)
-
 final class TeamsServiceLive: TeamsService {
     let httpClient: HTTPClient
     
-    init(httpClient: HTTPClient = withRateLimiter) {
+    init(httpClient: HTTPClient = HTTPClientFactory.withRateLimiter()) {
         self.httpClient = httpClient
     }
     
