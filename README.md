@@ -34,11 +34,15 @@ The balldontlie.io API enforces rate limits. This implementation includes automa
 
 ### Home Page Tab
 
+![Home Page Tab](Demos/HomePage.gif)
+
 1. List the following data in a list: full_name, city, conference.
 2. Tapping each cell should push and list all games for the selected team. See Selected Team Data.
 3. Tapping the Name button should show a sheet where the user can select from these order types: Name, City, Conference. The selected value should update the button title and order of the list.
 
 ### Selected Team Data
+
+![Selected Team Data](Demos/SelectedTeamData.gif)
 
 1. When in the Home page Tab, a user should be able to select a team to view recent games.
 2. Team data must be pushed using Navigation View.
@@ -47,6 +51,8 @@ The balldontlie.io API enforces rate limits. This implementation includes automa
 5. Implement endless scroll.
 
 ### Search Players Tab
+
+![Search Players Tab](Demos/SearchPlayers.gif)
 
 1. List data: first_name, last_name, team.full_name.
 2. Each row should push to show the player's team data.
